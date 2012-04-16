@@ -24,7 +24,6 @@ ApacheStat.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
 };
 
-ApacheStat.statics.createForCheck = function(status, time, check, monitorName, error, callback) {
 ApacheStat.statics.createForCheck = function(status, time, check, monitorName, error, result, callback) {
   var timestamp = new Date();
   var apacheStat = new this();
