@@ -17,6 +17,20 @@
         </div>
       </div>
       <div class="control-group">
+        <label class="control-label">Check Type</label>
+        <div class="controls btn-group">
+          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+           <%= check.checkType %>
+          <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu check-type">
+            <li><a href='#'>ping</a></li>
+            <li><a href='#'>apache status</a></li>
+          </ul>
+          <input type='hidden' name='check[checkType]' value='<%= check.checkType %>'/>
+        </div>
+      </div>
+      <div class="control-group">
         <label class="control-label">Polling interval</label>
         <div class="controls">
           <input type="text" name="check[interval]" value="<%= (check.interval / 1000).toFixed() %>" class="span2" />
@@ -57,6 +71,7 @@
   </form>
 </div>
 <script src="<%= route %>/javascripts/jquery.tagsinput.min.js"></script>
+<script src="<%= route %>/javascripts/bootstrap-dropdown.js"></script>
 <script>
 var intervalFieldSelector = 'form input[name="check\\[interval\\]"]';
 function updatePollingIntervalTooltip() {
@@ -74,6 +89,12 @@ $(document).ready(function() {
     if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
     $('#check_form input[name="_method"]').val('delete');
   });
+
+  $('.check-type>li>a').click(function () {
+      $('#check_form input[name="check\\[checkType\\]"]').val($(this).html().toLowerCase());
+      $('a.dropdown-toggle').html($(this).html() + '&nbsp;<b class="caret"></b>');
+    });
+
   updatePollingIntervalTooltip();
   $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
   $('#check_form input[name*="url"]').blur(function() {
@@ -88,5 +109,6 @@ $(document).ready(function() {
   $('.tagsinput span.tag span').live('click', function() {
     window.location = '/dashboard/tag/' + $(this).text();
   });
+  $('.dropdown-toggle').dropdown()
 });
 </script>
