@@ -176,17 +176,17 @@ Check.methods.updateQos = function(callback) {
 }
 
 var statProvider = {
-  '1h':  'Ping',
-  '6h':  'Ping',
-  '1d':  'CheckHourlyStat',
-  '7d':  'CheckHourlyStat',
-  'MTD': 'CheckDailyStat',
-  '1m':  'CheckDailyStat',
-  '3m':  'CheckDailyStat',
-  '6m':  'CheckMonthlyStat',
-  'YTD': 'CheckMonthlyStat',
-  '1y':  'CheckMonthlyStat',
-  '3y':  'CheckMonthlyStat'
+  '1h':  function (check) { return Stat(check.checkType).modelName; },
+  '6h':  function (check) { return Stat(check.checkType).modelName; },
+  '1d':  function () { return 'CheckHourlyStat'; },
+  '7d':  function () { return 'CheckHourlyStat'; },
+  'MTD': function () { return 'CheckDailyStat'; },
+  '1m':  function () { return 'CheckDailyStat'; },
+  '3m':  function () { return 'CheckDailyStat'; },
+  '6m':  function () { return 'CheckMonthlyStat'; },
+  'YTD': function () { return 'CheckMonthlyStat'; },
+  '1y':  function () { return 'CheckMonthlyStat'; },
+  '3y':  function () { return 'CheckMonthlyStat'; }
 };
 
 Check.methods.getStatsForPeriod = function(period, page, callback) {
@@ -196,7 +196,7 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
   }
   var stats = [];
   var query = { check: this, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
-  this.db.model(statProvider[period]).find(query).asc('timestamp').each(function(err, stat) {
+  this.db.model(statProvider[period](this)).find(query).asc('timestamp').each(function(err, stat) {
     if (stat) {
       if (typeof stat.isUp != 'undefined') {
         // stat is a Ping
