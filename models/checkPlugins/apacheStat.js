@@ -22,11 +22,11 @@ ApacheStat.plugin(require('../../lib/lifecycleEventsPlugin'));
 
 ApacheStat.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
-}
+};
 
 ApacheStat.statics.createForCheck = function(status, time, check, monitorName, error, callback) {
   var timestamp = new Date();
-  apacheStat = new this();
+  var apacheStat = new this();
   apacheStat.timestamp = timestamp;
   apacheStat.isUp = status;
   if (status && check.maxTime) {
@@ -41,18 +41,18 @@ ApacheStat.statics.createForCheck = function(status, time, check, monitorName, e
   if (!status) {
     apacheStat.downtime = check.interval || 60000;
     apacheStat.error = error;
-  };
+  }
   apacheStat.save(function(err) {
     callback(err, apacheStat);
     if (!err) {
       check.setLastTest(status, timestamp);
       check.save();
-    };
+    }
   });
-}
+};
 
 var mapCheckAndTags = function() {
-  var qos = { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0, time: this.time, downtime: this.downtime ? this.downtime : 0 };
+  var qos = { count: 1, ups: this.isUp ? 1 : 0, responsives: this.isResponsive ? 1 : 0, time: this.time, downtime: this.downtime ? this.downtime : 0 };
   emit(this.check, qos);
   if (!this.tags) return;
   for (index in this.tags) {
@@ -82,12 +82,12 @@ ApacheStat.statics.updateHourlyQos = function(now, callback) {
       }
     }, callback);
   });
-}
+};
 
 ApacheStat.statics.updateLastHourQos = function(callback) {
   var now = new Date(Date.now() - 1000 * 60 * 6); // 6 minutes in the past, to accomodate script running every 5 minutes
   this.updateHourlyQos(now, callback);
-}
+};
 
 ApacheStat.statics.updateLast24HoursQos = function(callback) {
   if ('undefined' == typeof callback) {
@@ -116,11 +116,11 @@ ApacheStat.statics.updateLast24HoursQos = function(callback) {
       }
     }, callback);
   });
-}
+};
 
 ApacheStat.statics.cleanup = function(maxAge, callback) {
-  oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
+  var oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
   this.find({ timestamp: { $lt: oldestDateToKeep } }).remove(callback);
-}
+};
 
 module.exports = mongoose.model('ApacheStat', ApacheStat);
