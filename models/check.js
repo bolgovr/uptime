@@ -13,6 +13,7 @@ var CheckMonthlyStat = require('../models/checkMonthlyStat');
 // main model
 var Check = new Schema({
     name        : String
+  , checkType   : { type: String, default: 'ping', enum: ['ping', 'apache status']}
   , type        : String
   , url         : String
   , interval    : { type: Number, default: 60000 }  // interval between two pings
