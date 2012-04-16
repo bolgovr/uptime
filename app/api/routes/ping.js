@@ -4,7 +4,7 @@
 
 var Check      = require('../../../models/check');
 var CheckEvent = require('../../../models/checkEvent');
-var Ping       = require('../../../models/ping');
+var Stat       = require('../../../models/stat');
 
 /**
  * Check Routes
