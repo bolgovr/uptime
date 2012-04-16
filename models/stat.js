@@ -1,5 +1,6 @@
 var supportedStats = {
-  'ping': require('./checkPlugins/ping.js')
+  'ping': require('./checkPlugins/ping.js'),
+  'apache status': require('./checkPlugins/apacheStat.js')
 };
 
 module.exports = function (checkPluginName) {
