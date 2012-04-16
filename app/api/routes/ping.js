@@ -10,7 +10,7 @@ var Ping       = require('../../../models/ping');
  * Check Routes
  */
 module.exports = function(app) {
-  
+
   app.get('/pings/check/:id/:page?', function(req, res, next) {
     Check.count({ _id: req.params.id}, function(err, nb_checks) {
       if (err) return app.next(err);
