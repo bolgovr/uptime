@@ -1,13 +1,13 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
-    TimeCalculator = require('../lib/timeCalculator'),
-    QosAggregator = require('../lib/qosAggregator'),
+    TimeCalculator = require('../../lib/timeCalculator'),
+    QosAggregator = require('../../lib/qosAggregator'),
     async    = require('async');
 
 var Ping = new Schema({
     timestamp    : { type: Date, default: Date.now }
   , isUp         : Boolean  // false if ping returned a non-OK status code or timed out
-  , isResponsive : Boolean  // true if the ping time is less than the check max time 
+  , isResponsive : Boolean  // true if the ping time is less than the check max time
   , time         : Number
   , check        : { type: Schema.ObjectId, ref: 'Check' }
   , tags         : [String]
@@ -17,7 +17,7 @@ var Ping = new Schema({
   , error        : String
 });
 Ping.index({ timestamp: -1 });
-Ping.plugin(require('../lib/lifecycleEventsPlugin'));
+Ping.plugin(require('../../lib/lifecycleEventsPlugin'));
 
 Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
@@ -66,8 +66,8 @@ Ping.statics.updateHourlyQos = function(now, callback) {
   }
   var start = TimeCalculator.resetHour(now);
   var end   = TimeCalculator.completeHour(now);
-  var CheckHourlyStat = require('./checkHourlyStat');
-  var TagHourlyStat   = require('./tagHourlyStat');
+  var CheckHourlyStat = require('../checkHourlyStat');
+  var TagHourlyStat   = require('../tagHourlyStat');
   QosAggregator.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
@@ -95,8 +95,8 @@ Ping.statics.updateLast24HoursQos = function(callback) {
   }
   var start = new Date(Date.now() - (24 * 60 * 60 * 1000));
   var end   = new Date();
-  var Check = require('../models/check');
-  var Tag   = require('../models/tag');
+  var Check = require('../../models/check');
+  var Tag   = require('../../models/tag');
   QosAggregator.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
