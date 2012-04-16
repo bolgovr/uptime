@@ -23,7 +23,7 @@ Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
 }
 
-Ping.statics.createForCheck = function(status, time, check, monitorName, error, callback) {
+Ping.statics.createForCheck = function(status, time, check, monitorName, error, result, callback) {
   var timestamp = new Date();
   ping = new this();
   ping.timestamp = timestamp;
