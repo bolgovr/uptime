@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     async    = require('async');
 
 // models dependencies
-var Ping             = require('../models/ping');
+var Stat             = require('../models/stat');
 var CheckEvent       = require('../models/checkEvent');
 var CheckHourlyStat  = require('../models/checkHourlyStat');
 var CheckDailyStat   = require('../models/checkDailyStat');
@@ -36,7 +36,7 @@ Check.pre('remove', function(next) {
 });
 
 Check.methods.removePings = function(callback) {
-  Ping.remove({ check: this._id }, callback);
+  Stat(this.checkType).remove({ check: this._id }, callback);
 };
 
 Check.methods.removeEvents = function(callback) {
@@ -91,7 +91,8 @@ Check.methods.getQosPercentage = function() {
 
 Check.methods.updateUptime = function(callback) {
   var self = this;
-  Ping
+  var CurrentCheck = Stat(this.checkType);
+  CurrentCheck
   .findOne()
   .where('check', self)
   .desc('timestamp')
@@ -104,7 +105,7 @@ Check.methods.updateUptime = function(callback) {
       // check is up
       // lastChanged is the latest down ping
       self.downtime = 0;
-      Ping
+     CurrentCheck
       .findOne()
       .where('check', self)
       .where('isUp', false)
@@ -118,7 +119,7 @@ Check.methods.updateUptime = function(callback) {
           self.save(callback);
         } else {
           // check never went down, last changed is the date of the first ping
-          Ping
+          CurrentCheck
           .findOne()
           .where('check', self)
           .asc('timestamp')
@@ -134,7 +135,7 @@ Check.methods.updateUptime = function(callback) {
       // check is down
       // lastChanged is the latest up ping
       self.uptime = 0;
-      Ping
+     CurrentCheck
       .findOne()
       .where('check', self)
       .where('isUp', true)
@@ -148,7 +149,7 @@ Check.methods.updateUptime = function(callback) {
           self.save(callback);
         } else {
           // check never went up, last changed is the date of the first ping
-          Ping
+         CurrentCheck
           .findOne()
           .where('check', self)
           .asc('timestamp')
@@ -166,7 +167,7 @@ Check.methods.updateUptime = function(callback) {
 
 Check.methods.updateQos = function(callback) {
   var check = this;
-  Ping.countForCheck(check, new Date(Date.now() - (24 * 60 * 60 * 1000)), new Date(), function(err, result) {
+  Stat(this.checkType).countForCheck(check, new Date(Date.now() - (24 * 60 * 60 * 1000)), new Date(), function(err, result) {
     if (err || !(0 in result)) return;
     check.qos = result[0].value;
     check.markModified('qos');
